@@ -1,7 +1,8 @@
-package utilities;
+package com.kamontat.utilities;
 
-import java.net.*;
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 
 // This is a decorator (wrapper) for an InputStream that you can monitor read progress.
 //import javax.swing.ProgressMonitorInputStream;

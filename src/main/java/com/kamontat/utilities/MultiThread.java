@@ -1,4 +1,4 @@
-package utilities;
+package com.kamontat.utilities;
 
 import java.util.*;
 import java.util.concurrent.*;

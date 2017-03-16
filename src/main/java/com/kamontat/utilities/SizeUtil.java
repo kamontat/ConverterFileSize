@@ -1,4 +1,10 @@
-package utilities;
+package com.kamontat.utilities;
+
+import com.kamontat.constants.SizeUnit;
+import com.kamontat.constants.SizeUnitType;
+import com.kamontat.object.Size;
+
+import java.math.BigDecimal;
 
 /**
  * @author kamontat
@@ -23,5 +29,9 @@ public class SizeUtil {
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE": "KMGTPE").charAt(exp - 1) + (si ? "": "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	}
+	
+	public static Size getSize(long size, SizeUnit unit, SizeUnitType type) {
+		return new Size(BigDecimal.valueOf(size), unit, type);
 	}
 }
