@@ -1,11 +1,12 @@
 package com.kamontat.example;
 
-import com.kamontat.constants.SizeUnitType;
 import com.kamontat.object.Size;
 import com.kamontat.utilities.SizeUtil;
 
 import static com.kamontat.constants.SizeUnit.BYTE;
-import static com.kamontat.constants.SizeUnit.EB;
+import static com.kamontat.constants.SizeUnit.YB;
+import static com.kamontat.constants.SizeUnitType.NON_SI;
+import static com.kamontat.constants.SizeUnitType.SI;
 
 /**
  * @author kamontat
@@ -14,8 +15,8 @@ import static com.kamontat.constants.SizeUnit.EB;
  */
 public class SizeUsage {
 	public static void main(String[] args) {
-		Size DEFAULT = SizeUtil.getSize(10, EB, SizeUnitType.NON_SI);
-		Size s = DEFAULT.convertTo(BYTE).convertTo(SizeUnitType.SI).convertTo(EB).convertTo(SizeUnitType.SI);
+		Size DEFAULT = SizeUtil.getSize(10, YB, NON_SI);
+		Size s = DEFAULT.convertTo(BYTE).convertTo(SI).convertTo(NON_SI).convertTo(YB);
 		System.out.println(s);
 	}
 }
