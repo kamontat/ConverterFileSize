@@ -23,6 +23,11 @@ public enum SizeUnitType {
 		this.size = size;
 	}
 	
+	/**
+	 * get default multiply number
+	 *
+	 * @return multiply number
+	 */
 	public int getSize() {
 		return size;
 	}
