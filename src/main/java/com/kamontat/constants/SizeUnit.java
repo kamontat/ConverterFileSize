@@ -1,52 +1,60 @@
 package com.kamontat.constants;
 
+import com.kamontat.object.Size;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
+ * contains the unit of file size and type of that unit <br>
+ * The type we have 2 type <br>
+ * <ol>
+ * <li>SI - {@link SizeUnitType#SI}</li>
+ * <li>Non-SI - {@link SizeUnitType#NON_SI}</li>
+ * </ol>
+ *
  * @author kamontat
  * @version 1.0
- * @since Thu 1DEFAULT_SIZE/Mar/2017 - 12:02 AM
+ * @see SizeUnitType
+ * @since Thu 16/Mar/2017 - 12:02 AM
  */
 public enum SizeUnit {
 	/**
 	 * <b>Byte</b> or <b>Byte</b>
 	 */
-	B("Byte", "Byte", 1),
+	BYTE("Byte", "Byte", 1),
 	/**
 	 * <b>Kilobyte</b> or <b>Kibibyte</b>
 	 */
-	K("Kilobyte", "Kibibyte", 2),
+	KB("Kilobyte", "Kibibyte", 2),
 	/**
 	 * <b>Megabyte</b> or <b>Mebibyte</b>
 	 */
-	M("Megabyte", "Mebibyte", 3),
+	MB("Megabyte", "Mebibyte", 3),
 	/**
 	 * <b>Gigabyte</b> or <b>Gibibyte</b>
 	 */
-	G("Gigabyte", "Gibibyte", 4),
+	GB("Gigabyte", "Gibibyte", 4),
 	/**
 	 * <b>Terabyte</b> or <b>Tebibyte</b>
 	 */
-	T("Terabyte", "Tebibyte", 5),
+	TB("Terabyte", "Tebibyte", 5),
 	/**
 	 * <b>Petabyte</b> or <b>Pebibyte</b>
 	 */
-	P("Petabyte", "Pebibyte", 6),
+	PB("Petabyte", "Pebibyte", 6),
 	/**
 	 * <b>Exabyte</b> or <b>Exbibyte</b>
 	 */
-	E("Exabyte", "Exbibyte", 7),
+	EB("Exabyte", "Exbibyte", 7),
 	/**
 	 * <b>Zettabyte</b> or <b>Zebibyte</b>
 	 */
-	Z("Zettabyte", "Zebibyte", 8),
+	ZB("Zettabyte", "Zebibyte", 8),
 	/**
 	 * <b>Yottabyte</b> or <b>Yobibyte</b>
 	 */
-	Y("Yottabyte", "Yobibyte", 9);
-	
-	private static final int DEFAULT_SIZE = 6;
+	YB("Yottabyte", "Yobibyte", 9);
 	
 	private SizeUnitType type = SizeUnitType.NON_SI;
 	private String nonSI;
@@ -59,81 +67,93 @@ public enum SizeUnit {
 		this.multiply = multiply;
 	}
 	
-	public SizeUnit type(SizeUnitType type) {
+	/**
+	 * set new type and return this
+	 *
+	 * @param type
+	 * 		the new type
+	 * @return this
+	 */
+	public SizeUnit setType(SizeUnitType type) {
 		this.type = type;
 		return this;
 	}
 	
-	protected SizeUnitType getType() {
+	public SizeUnitType getType() {
 		return type;
 	}
 	
-	protected int getPow() {
-		return multiply;
+	/**
+	 * get unit, by type that insert
+	 *
+	 * @return string of unit
+	 */
+	public String getString() {
+		return type == SizeUnitType.SI ? si: nonSI;
 	}
 	
 	public BigDecimal toB(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, B);
+		return to(number, decimalPoint, BYTE);
 	}
 	
 	public BigDecimal toK(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, K);
+		return to(number, decimalPoint, KB);
 	}
 	
 	public BigDecimal toM(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, M);
+		return to(number, decimalPoint, MB);
 	}
 	
 	public BigDecimal toT(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, T);
+		return to(number, decimalPoint, TB);
 	}
 	
 	public BigDecimal toP(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, P);
+		return to(number, decimalPoint, PB);
 	}
 	
 	public BigDecimal toE(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, E);
+		return to(number, decimalPoint, EB);
 	}
 	
 	public BigDecimal toZ(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, Z);
+		return to(number, decimalPoint, ZB);
 	}
 	
 	public BigDecimal toY(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, Y);
+		return to(number, decimalPoint, YB);
 	}
 	
 	public BigDecimal toB(BigDecimal number) {
-		return toB(number, DEFAULT_SIZE);
+		return toB(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal toK(BigDecimal number) {
-		return toK(number, DEFAULT_SIZE);
+		return toK(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal toM(BigDecimal number) {
-		return toM(number, DEFAULT_SIZE);
+		return toM(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal toT(BigDecimal number) {
-		return toT(number, DEFAULT_SIZE);
+		return toT(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal toP(BigDecimal number) {
-		return toP(number, DEFAULT_SIZE);
+		return toP(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal toE(BigDecimal number) {
-		return toE(number, DEFAULT_SIZE);
+		return toE(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal toZ(BigDecimal number) {
-		return toZ(number, DEFAULT_SIZE);
+		return toZ(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal toY(BigDecimal number) {
-		return toY(number, DEFAULT_SIZE);
+		return toY(number, Size.SIZE_SCALE);
 	}
 	
 	public BigDecimal to(BigDecimal number, int decimalPoint, SizeUnit unit) {
@@ -143,7 +163,7 @@ public enum SizeUnit {
 	
 	public BigDecimal to(BigDecimal number, SizeUnit unit) {
 		int pow = getPow(unit);
-		return choose(number, pow, DEFAULT_SIZE);
+		return choose(number, pow, Size.SIZE_SCALE);
 	}
 	
 	private BigDecimal choose(BigDecimal number, int pow, int decimal) {
@@ -155,11 +175,20 @@ public enum SizeUnit {
 	}
 	
 	private int getPow(SizeUnit unit) {
-		return this.getPow() - unit.getPow();
+		return multiply - unit.multiply;
 	}
 	
+	/**
+	 * Example usage directly <br>
+	 * otherwise you can use this enum by {@link com.kamontat.utilities.SizeUtil#getSize(long, SizeUnit, SizeUnitType)}
+	 *
+	 * @param args
+	 * 		no used
+	 * @see com.kamontat.utilities.SizeUtil
+	 * @see com.kamontat.object.Size
+	 */
 	public static void main(String[] args) {
-		BigDecimal decimal = SizeUnit.P.toE(new BigDecimal("1"));
+		BigDecimal decimal = SizeUnit.PB.toE(new BigDecimal("1"));
 		System.out.println(decimal);
 	}
 }
