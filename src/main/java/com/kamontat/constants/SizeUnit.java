@@ -4,6 +4,7 @@ import com.kamontat.object.Size;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.*;
 
 /**
  * contains the unit of file size and type of that unit <br>
@@ -74,10 +75,11 @@ public enum SizeUnit {
 	 * set new type and return this
 	 *
 	 * @param type
-	 * 		the new type
+	 * 		the new type, can't be {@code null}
 	 * @return this
 	 */
 	public SizeUnit setType(SizeUnitType type) {
+		if (type == null) return this;
 		this.type = type;
 		return this;
 	}
@@ -93,6 +95,36 @@ public enum SizeUnit {
 	 */
 	public String getString() {
 		return type == SizeUnitType.SI ? si: nonSI;
+	}
+	
+	/**
+	 * get string of specify input type
+	 *
+	 * @param type
+	 * 		input size unit type
+	 * @return string of unit
+	 */
+	public String getString(SizeUnitType type) {
+		return type == SizeUnitType.SI ? si: nonSI;
+	}
+	
+	/**
+	 * get string that must contain unit of file size and convert it to {@link SizeUnit}
+	 *
+	 * @param s
+	 * 		string that contains unit, like this {@link com.kamontat.utilities.SizeUtil#toMinimumByte(long, SizeUnitType)} method
+	 * @param type
+	 * 		the type (can be null if don't know)
+	 * @return SizeUnit if present; otherwise, will return {@link SizeUnit#BYTE}
+	 */
+	public SizeUnit toUnit(String s, SizeUnitType type) {
+		return Arrays.stream(values()).filter(sizeUnit -> {
+			// is short form
+			boolean isAbbreviation = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.name().toLowerCase(Locale.ENGLISH));
+			boolean isSi = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.getString(SizeUnitType.SI).toLowerCase(Locale.ENGLISH));
+			boolean isNonSi = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.getString(SizeUnitType.NON_SI).toLowerCase(Locale.ENGLISH));
+			return isAbbreviation || isSi || isNonSi;
+		}).findFirst().orElse(BYTE).setType(type);
 	}
 	
 	/**
