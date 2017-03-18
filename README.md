@@ -1,5 +1,3 @@
-# Utilities
-
 # Description
 This API contains URL and Multi-thread implementation with optional File size conversion
 
