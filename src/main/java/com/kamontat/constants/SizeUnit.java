@@ -5,6 +5,7 @@ import com.kamontat.object.Size;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * contains the unit of file size and type of that unit <br>
@@ -117,10 +118,19 @@ public enum SizeUnit {
 	 * 		the type (can be null if don't know)
 	 * @return SizeUnit if present; otherwise, will return {@link SizeUnit#BYTE}
 	 */
-	public SizeUnit toUnit(String s, SizeUnitType type) {
+	public static SizeUnit valueOf(String s, SizeUnitType type) {
 		return Arrays.stream(values()).filter(sizeUnit -> {
+			String textLower = s.toLowerCase(Locale.ENGLISH);
+			String letterLower = textLower.chars().filter(Character::isLowerCase).mapToObj(value -> String.valueOf((char) value)).collect(Collectors.joining());
 			// is short form
-			boolean isAbbreviation = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.name().toLowerCase(Locale.ENGLISH));
+			boolean isAbbreviation;
+			// the short must be 2 or 1 only
+			if (letterLower.length() == 2 || letterLower.length() == 1) {
+				isAbbreviation = letterLower.contains(sizeUnit.name().toLowerCase(Locale.ENGLISH));
+				// otherwise will get first char and last char to computer
+			} else {
+				isAbbreviation = (letterLower.charAt(0) + "" + letterLower.charAt(letterLower.length() - 1)).contains(sizeUnit.name().toLowerCase(Locale.ENGLISH));
+			}
 			boolean isSi = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.getString(SizeUnitType.SI).toLowerCase(Locale.ENGLISH));
 			boolean isNonSi = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.getString(SizeUnitType.NON_SI).toLowerCase(Locale.ENGLISH));
 			return isAbbreviation || isSi || isNonSi;
