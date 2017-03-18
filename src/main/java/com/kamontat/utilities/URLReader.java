@@ -32,7 +32,8 @@ public class URLReader implements Runnable {
 	private FileOutputStream outStream;
 	
 	/**
-	 * Initialize a new URL Reader.
+	 * Initialize a new URL Reader. <br>
+	 * <b>precondition</b>: url is a valid URL, outfile is a valid writable file or directory.
 	 *
 	 * @param url
 	 * 		is the URL to read from
@@ -43,7 +44,6 @@ public class URLReader implements Runnable {
 	 * 		if URLConnection fails,
 	 * @throws FileNotFoundException
 	 * 		if outfile not found or cannot be written to
-	 * @precondition url is a valid URL, outfile is a valid writable file or directory.
 	 */
 	public URLReader(URL url, File outfile) throws IOException {
 		if (url == null) throw new IllegalArgumentException("url cannot be null");

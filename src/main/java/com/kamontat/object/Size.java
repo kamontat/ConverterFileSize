@@ -18,7 +18,7 @@ public class Size {
 	/**
 	 * default scale of BigDecimal size
 	 */
-	public static int SIZE_SCALE = 99;
+	public static int SIZE_SCALE = 9;
 	/**
 	 * default of rounding the number
 	 */
