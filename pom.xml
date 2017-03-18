@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.kamontat</groupId>
     <artifactId>Utilities</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <properties>
         <!-- compiler version -->
         <maven.compiler.version>3.1</maven.compiler.version>

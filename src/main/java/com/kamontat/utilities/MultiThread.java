@@ -75,8 +75,7 @@ public class MultiThread {
 	 * @return {@link ScheduledFuture} - this class will let you know what going on, since this method will close from cancellation only so you cannot use the method {@code get()} normally
 	 */
 	public ScheduleFutureImp schedule(Runnable runnable, int initial, int delay, int until, TimeUnit unit, boolean fix) {
-		if (service.getClass().equals(ScheduledExecutorService.class))
-			throw new ClassCastException("The service must be ScheduledExecutorService");
+		if (!(service instanceof ScheduledExecutorService)) throw new ScheduleException();
 		
 		ScheduledExecutorService scheduled = (ScheduledExecutorService) service;
 		ScheduledFuture future = fix ? scheduled.scheduleWithFixedDelay(runnable, initial, delay, unit): scheduled.scheduleAtFixedRate(runnable, initial, delay, unit);
@@ -380,6 +379,12 @@ public class MultiThread {
 		
 		public int compareTo(Object o) {
 			return future.compareTo(o);
+		}
+	}
+	
+	private class ScheduleException extends RuntimeException {
+		private ScheduleException() {
+			super("The service must be ScheduledExecutorService");
 		}
 	}
 }

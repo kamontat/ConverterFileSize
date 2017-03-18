@@ -12,8 +12,10 @@ import java.util.concurrent.Future;
  */
 public class ExecuteBackground {
 	public static void main(String[] args) {
-		MultiThread multiThread = new MultiThread(Executors.newScheduledThreadPool(1));
+		MultiThread multiThread = new MultiThread(Executors.newFixedThreadPool(1));
+		// execution in bg
 		Future f = multiThread.execute(() -> {
+			// long long task
 			for (int i = 0; i < Integer.MAX_VALUE; i++) {
 				int a = 1;
 			}
