@@ -2,8 +2,7 @@ package com.kamontat.example;
 
 import com.kamontat.utilities.MultiThread;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author kamontat
@@ -13,10 +12,30 @@ import java.util.concurrent.TimeUnit;
 public class DoInterval {
 	public static void main(String[] args) {
 		MultiThread multiThread = new MultiThread(Executors.newScheduledThreadPool(1));
-		// print `Hello world!` every 1 second for 1 minute
-		multiThread.schedule(() -> System.out.println("Hello world!"), 0, 1, 60, TimeUnit.SECONDS);
-		multiThread.schedule(() -> System.out.println("New world"), 0, 2, 60, TimeUnit.SECONDS);
+		// print `Hello world!` every 1 second for 10 second
+		MultiThread.ScheduleFutureImp future = multiThread.schedule(() -> System.out.println("Hello world!"), 1, 1, 10, TimeUnit.SECONDS, true);
+		
+		if (future.waitAndDone()) {
+			System.out.println("done");
+		} else {
+			System.err.println("Some exception");
+		}
 		
 		multiThread.shutdown();
+		
+		/*
+		The result will be:
+		
+		Hello world!
+		Hello world!
+		Hello world!
+		Hello world!
+		Hello world!
+		Hello world!
+		Hello world!
+		Hello world!
+		Hello world!
+		done
+		 */
 	}
 }

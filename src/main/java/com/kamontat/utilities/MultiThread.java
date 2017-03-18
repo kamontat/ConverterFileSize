@@ -9,21 +9,21 @@ import java.util.function.Function;
  * Meaning: if you want to run some code in background or want to wait until the code been finished. <br>
  * In this class I use {@link ExecutorService} to manage the task, I create 3 type of execution <br>
  * <ol>
- * <li>{@link #schedule(Runnable, int, int, int, TimeUnit) Schedule} - to schedule execute action with delay until some ime</li>
+ * <li>{@link #schedule(Runnable, int, int, int, TimeUnit, boolean) Schedule} - to schedule execute action with delay until some ime</li>
  * <li>{@link #execute(Callable)} - To do some task in the background</li>
  * <li>{@link #executeAndWaitAll(Runnable...)} or {@link #executeAndWaitAny(Callable[])} - Exxecute some very task and want program to wait until the task was end</li>
  * </ol>
  * <b>Beware</b>: To use the multiThread class, after you don't use the class anymore please call {@link #shutdown()} or {@link #forceShutdown()} to stop and terminal the thread
  * <p>
  * <b>Example: </b> <br>
- * <pre><code>
+ * <pre>{@code
  *     // create new thread
  *     MultiThread thread = new MultiThread(Executors.newScheduledThreadPool(1));
  *     // print "Hello world!" in every 1 second for 1 minutes
  *     thread.schedule(() -> System.out.println("Hello world!"), 0, 1, 60, TimeUnit.SECONDS);
  *     // close the thread
  *     multiThread.shutdown();
- * </code></pre>
+ * }</pre>
  *
  * @author kamontat
  * @version 1.0
@@ -48,7 +48,13 @@ public class MultiThread {
 	
 	/**
 	 * The service must be {@link java.util.concurrent.ScheduledExecutorService} class <br>
-	 * the scheduling the task in time interval at the future
+	 * the scheduling the task in time interval at the future,
+	 * <p>
+	 * And because of ScheduledExecutorService don't have method that can rerun the task and end at some time so I need to implement by myself by using {@link ScheduledFuture#cancel(boolean)} method to <b>cancel</b> it when task should be end. <br>
+	 * <b>Example</b>:
+	 * <pre>{@code
+	 *
+	 * }</pre>
 	 *
 	 * @param runnable
 	 * 		method that want to execute
@@ -60,16 +66,22 @@ public class MultiThread {
 	 * 		the time end
 	 * @param unit
 	 * 		unit if the time
-	 * @return {@link ScheduledFuture} - this class will let you know what going on
+	 * @param fix
+	 * 		{@code true} when the {@code delay} time meaning delay time will fixed (not whether execute time is what but program will add more delay time on it); otherwise is {@code false} <br>
+	 * 		<ol>
+	 * 		<li>if {@code true} you can learn more at {@link ScheduledExecutorService#scheduleWithFixedDelay(Runnable, long, long, TimeUnit)}</li>
+	 * 		<li>if {@code false} you can learn more at {@link ScheduledExecutorService#scheduleAtFixedRate(Runnable, long, long, TimeUnit)}</li>
+	 * 		</ol>
+	 * @return {@link ScheduledFuture} - this class will let you know what going on, since this method will close from cancellation only so you cannot use the method {@code get()} normally
 	 */
-	public ScheduledFuture schedule(Runnable runnable, int initial, int delay, int until, TimeUnit unit) {
+	public ScheduleFutureImp schedule(Runnable runnable, int initial, int delay, int until, TimeUnit unit, boolean fix) {
 		if (service.getClass().equals(ScheduledExecutorService.class))
 			throw new ClassCastException("The service must be ScheduledExecutorService");
 		
 		ScheduledExecutorService scheduled = (ScheduledExecutorService) service;
-		ScheduledFuture future = scheduled.scheduleAtFixedRate(runnable, initial, delay, unit);
+		ScheduledFuture future = fix ? scheduled.scheduleWithFixedDelay(runnable, initial, delay, unit): scheduled.scheduleAtFixedRate(runnable, initial, delay, unit);
 		scheduled.schedule(() -> future.cancel(true), until, unit);
-		return future;
+		return new ScheduleFutureImp(future, service);
 	}
 	
 	/**
@@ -284,5 +296,90 @@ public class MultiThread {
 			runnable.run();
 			return returnValue;
 		};
+	}
+	
+	/**
+	 * This class implemented because I need the easy way to manage the {@link ScheduledFuture} <br>
+	 * This class have new method call {@link #waitAndDone()} so that program will wait until program done
+	 */
+	public class ScheduleFutureImp implements ScheduledFuture {
+		private ScheduledFuture future;
+		private ExecutorService service;
+		
+		private ScheduleFutureImp(ScheduledFuture future, ExecutorService service) {
+			this.future = future;
+			this.service = service;
+		}
+		
+		/**
+		 * wait until execution was done, and return the result in term of true/false
+		 *
+		 * @return true iff the execute out because of cancellation (like method {@link #schedule(Runnable, int, int, int, TimeUnit, boolean)})
+		 */
+		public boolean waitAndDone() {
+			Object o = get();
+			done();
+			return o != null;
+		}
+		
+		private void done() {
+			service.shutdown();
+			if (!service.isShutdown()) service.shutdownNow();
+		}
+		
+		@Override
+		public long getDelay(TimeUnit unit) {
+			return future.getDelay(unit);
+		}
+		
+		@Override
+		public boolean cancel(boolean mayInterruptIfRunning) {
+			return future.cancel(mayInterruptIfRunning);
+		}
+		
+		@Override
+		public boolean isCancelled() {
+			return future.isCancelled();
+		}
+		
+		@Override
+		public boolean isDone() {
+			return future.isDone();
+		}
+		
+		/**
+		 * this get will return 2 thing
+		 * <ol>
+		 * <li>{@link CancellationException} - if the task got cancel ({@link MultiThread#schedule(Runnable, int, int, int, TimeUnit, boolean)})</li>
+		 * <li>{@code Null} - if have another exception or {@link ScheduledFuture#get()} return object successfully</li>
+		 * </ol>
+		 *
+		 * @return null or {@link CancellationException}
+		 */
+		@Override
+		public Object get() {
+			try {
+				future.get();
+			} catch (CancellationException e) {
+				return e;
+			} catch (ExecutionException | InterruptedException e) {
+				e.printStackTrace();
+				return null;
+			}
+			return null;
+		}
+		
+		@Override
+		public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+			return future.get(timeout, unit);
+		}
+		
+		public int compareTo(Delayed o) {
+			return future.compareTo(o);
+		}
+		
+		public int compareTo(Object o) {
+			return future.compareTo(o);
+		}
 	}
 }
