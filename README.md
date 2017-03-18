@@ -4,6 +4,8 @@ This API contains URL and Multi-thread implementation with optional File size co
 # How To Use
 This project I already write the example code in this [link](https://github.com/kamontat/Utilities/tree/master/src/main/java/com/kamontat/example) or you can find the source code in the folder `src/main/java/com/kamontat/example`
 
+The java document will be in this [link](https://kamontat.github.io/Utilities/)
+
 # How to contribute
 Just 
 1. fork 
