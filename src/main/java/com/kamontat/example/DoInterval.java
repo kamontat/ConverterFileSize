@@ -15,5 +15,8 @@ public class DoInterval {
 		MultiThread multiThread = new MultiThread(Executors.newScheduledThreadPool(1));
 		// print `Hello world!` every 1 second for 1 minute
 		multiThread.schedule(() -> System.out.println("Hello world!"), 0, 1, 60, TimeUnit.SECONDS);
+		multiThread.schedule(() -> System.out.println("New world"), 0, 2, 60, TimeUnit.SECONDS);
+		
+		multiThread.shutdown();
 	}
 }
