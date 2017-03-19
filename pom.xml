@@ -7,13 +7,13 @@
     <artifactId>Utilities</artifactId>
     <version>1.0.0</version>
     <properties>
-        <!-- compiler version -->
-        <maven.compiler.version>3.1</maven.compiler.version>
         <!-- java version -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <!-- doc compiler version -->
+        <!-- execution -->
+        <maven.compiler.version>3.1</maven.compiler.version>
         <maven.doc.version>2.10.4</maven.doc.version>
+        <maven.source.version>3.0.1</maven.source.version>
     </properties>
     <build>
         <plugins>
@@ -35,6 +35,20 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--source execution-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
