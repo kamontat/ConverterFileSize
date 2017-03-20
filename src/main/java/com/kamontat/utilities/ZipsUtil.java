@@ -17,19 +17,23 @@ public class ZipsUtil {
 	// read buffer
 	private static byte[] buffer = new byte[SIZE];
 	
-	public static void unZip(String zipFile, String outputFolder) {
-		unZip(zipFile, outputFolder, pathname -> true);
+	public static String unZip(String zipFile, String outputFolder) {
+		return unZip(zipFile, outputFolder, pathname -> true);
 	}
 	
-	public static void unZip(String zipFile, String outputFolder, FileFilter filter) {
-		cleanBuffer();
+	public static String unZip(String zipPath, String outputFolder, FileFilter filter) {
+		String rootFile = FilesUtil.removeExtension(FilesUtil.getFileName(zipPath));
 		
+		cleanBuffer();
 		try {
 			//create output directory is not exists
-			File folder = new File(outputFolder);
-			if (!folder.exists()) folder.mkdirs();
+			FilesUtil.isExist(outputFolder);
+			if (!FilesUtil.isEmptyDirectory(outputFolder)) {
+				outputFolder = FilesUtil.createFolders(outputFolder, rootFile);
+				if (outputFolder.equals("")) return "";
+			}
 			
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipPath));
 			ZipEntry ze = zis.getNextEntry();
 			
 			while (ze != null) {
@@ -54,28 +58,35 @@ public class ZipsUtil {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+		return outputFolder;
 	}
 	
-	// TODO 3/20/2017 AD 1:53 AM NO TEST YET
-	public void zip(String zipFile, String inputFolder) {
+	public void zip(String zipPath, String inputFolder) {
 		cleanBuffer();
-		
 		try {
-			FileOutputStream fos = new FileOutputStream(zipFile);
-			ZipOutputStream zos = new ZipOutputStream(fos);
+			if (!FilesUtil.isExistNotCreate(inputFolder) || FilesUtil.isEmptyDirectory(inputFolder)) {
+				System.err.println("input folder must have input file to zip");
+				return;
+			}
 			
-			System.out.println("Output to Zip : " + zipFile);
+			if (!FilesUtil.isExist(zipPath)) {
+				System.err.println("zip path not exist and cannot created");
+				return;
+			}
+			
+			if (!FilesUtil.isEmptyDirectory(zipPath)) {
+				zipPath = FilesUtil.createFolders(zipPath, FilesUtil.getFileName(inputFolder));
+				if (zipPath.equals("")) return;
+			}
+			
+			ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath));
 			
 			List<String> all = FilesUtil.getAllFileNames(inputFolder, true);
-			
 			for (String file : all) {
-				
 				System.out.println("File Added : " + file);
-				ZipEntry ze = new ZipEntry(file);
-				zos.putNextEntry(ze);
+				zos.putNextEntry(new ZipEntry(file));
 				
 				FileInputStream in = new FileInputStream(inputFolder + File.separator + file);
-				
 				int len;
 				while ((len = in.read(buffer)) > 0) {
 					zos.write(buffer, 0, len);
@@ -88,6 +99,8 @@ public class ZipsUtil {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+		
+		System.out.println("Output to Zip : " + zipPath);
 	}
 	
 	private static void cleanBuffer() {

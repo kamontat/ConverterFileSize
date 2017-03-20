@@ -407,24 +407,28 @@ public class FilesUtil {
 	 * create multi-level directory <br>
 	 * Example use: createFolders("/", "Users", "Power", "Main");
 	 *
-	 * @param folderPath
-	 * 		the path to create multi-level directory
 	 * @param paths
+	 * 		must be at least 1 element is root folder
 	 * 		(Optional) the folder that want to created.
-	 * @return String the created directory path
+	 * @return String the created directory path or empty string if something error
 	 */
-	public static String createFolders(String folderPath, String... paths) {
+	public static String createFolders(String... paths) {
+		if (paths.length == 0) return "";
+		String root = paths[0];
+		String[] other = new String[paths.length - 1];
+		System.arraycopy(paths, 1, other, 0, paths.length - 1);
+		
 		try {
-			File file = new File(folderPath);
+			File file = new File(root);
 			if (!file.exists()) file.mkdirs();
 			if (!file.isDirectory()) {
-				System.out.println("folderPath must be directory");
+				System.err.println("folderPath must be directory");
 				return "";
 			}
 			
-			String nextPath = folderPath;
-			for (String path : paths) {
-				if (nextPath.lastIndexOf(File.separator) == -1) {
+			String nextPath = root;
+			for (String path : other) {
+				if (nextPath.lastIndexOf(File.separator) != 0) {
 					nextPath += File.separator;
 				}
 				newFolder(nextPath + path);
@@ -536,6 +540,29 @@ public class FilesUtil {
 	}
 	
 	/**
+	 * get file name without extension <br>
+	 * example: {@code test.txt} will return {@code test}
+	 *
+	 * @param fileName
+	 * 		file name
+	 * @return file name without extension
+	 */
+	public static String removeExtension(String fileName) {
+		return fileName.replace("." + getExtension(fileName), "");
+	}
+	
+	/**
+	 * get file name from path
+	 *
+	 * @param path
+	 * 		absolute file/folder path
+	 * @return name of the file
+	 */
+	public static String getFileName(String path) {
+		return new File(path).getName();
+	}
+	
+	/**
 	 * check if directory exists, if not exist, create it, return false if create failed
 	 *
 	 * @param path
@@ -543,14 +570,11 @@ public class FilesUtil {
 	 * @return boolean
 	 */
 	public static boolean isExist(String path) {
-		File file = new File(path);
-		if (!file.exists()) {
-			boolean isSuccess = file.mkdir();
-			if (!isSuccess) isSuccess = !createFolders(path).equals("");
-			return isSuccess;
-		} else {
-			return true;
+		if (!isExistNotCreate(path)) {
+			String newPath = FilesUtil.createFolders(FilesUtil.separatePath(path));
+			return !newPath.equals("");
 		}
+		return true;
 	}
 	
 	/**
@@ -561,7 +585,19 @@ public class FilesUtil {
 	 * @return boolean
 	 */
 	public static boolean isExistNotCreate(String path) {
-		return new File(path).exists();
+		File f = new File(path);
+		return (f.exists() && f.isDirectory());
+	}
+	
+	/**
+	 * check is path a directory
+	 *
+	 * @param path
+	 * 		absolute folder path
+	 * @return true if path is directory path
+	 */
+	public static boolean isDirectory(String path) {
+		return new File(path).isDirectory();
 	}
 	
 	/**
@@ -584,6 +620,20 @@ public class FilesUtil {
 	}
 	
 	/**
+	 * check is that directory empty or not
+	 *
+	 * @param path
+	 * 		absolute folder path
+	 * @return true if the path is empty directory
+	 */
+	public static boolean isEmptyDirectory(String path) {
+		if (!FilesUtil.isDirectory(path)) return false;
+		
+		List<String> list = FilesUtil.getAllFileNames(path, true);
+		return list.size() == 0;
+	}
+	
+	/**
 	 * move a file
 	 *
 	 * @param fileName
@@ -600,6 +650,19 @@ public class FilesUtil {
 			createFolders(dstPath);
 		}
 		return moveFile(srcPath + File.separator + fileName, dstPath + File.separator + fileName);
+	}
+	
+	/**
+	 * separate the path to file name array <br>
+	 * example: {@code /var/private/zz/yy} - [var, private, zz, yy]
+	 *
+	 * @param path
+	 * 		file name with {@code absolute path}
+	 * @return file or folder string in each element
+	 */
+	public static String[] separatePath(String path) {
+		String[] ss = path.split(File.separator);
+		return Arrays.stream(ss).filter(s -> !s.isEmpty()).toArray(String[]::new);
 	}
 	
 	/**

@@ -4,7 +4,6 @@ import com.kamontat.utilities.FilesUtil;
 import com.kamontat.utilities.ZipsUtil;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 
 /**
  * @author kamontat
@@ -13,6 +12,6 @@ import java.nio.file.Paths;
  */
 public class ZipUsage {
 	public static void main(String[] args) throws IOException {
-		ZipsUtil.unZip(FilesUtil.getFile("some_zip_file.zip").getAbsolutePath(), Paths.get(".").toFile().getAbsolutePath());
+		String s = ZipsUtil.unZip(FilesUtil.getFile("out.zip").getAbsolutePath(), FilesUtil.getFile().getAbsolutePath());
 	}
 }
