@@ -12,6 +12,9 @@ import java.io.IOException;
  */
 public class ZipUsage {
 	public static void main(String[] args) throws IOException {
-		String s = ZipsUtil.unZip(FilesUtil.getFile("out.zip").getAbsolutePath(), FilesUtil.getFile().getAbsolutePath());
+		// unzip
+		String s = ZipsUtil.unZip(FilesUtil.getFileFromRoot("out.zip").getAbsolutePath(), FilesUtil.getFileFromRoot().getAbsolutePath());
+		// zip
+		ZipsUtil.zip(FilesUtil.getFileFromRoot("xyz" /* or `xyz.zip` */).getAbsolutePath(), FilesUtil.getFileFromRoot("src").getAbsolutePath());
 	}
 }
