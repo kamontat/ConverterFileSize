@@ -509,7 +509,20 @@ public class FilesUtil {
 	}
 	
 	/**
-	 * get all names of file in the folder
+	 * get all absolute path file in the folder
+	 *
+	 * @param path
+	 * 		String folder path
+	 * @param isDepth
+	 * 		boolean is need to scan all subdirectories
+	 * @return {@link List} of the {@link String}
+	 */
+	public static List<String> getAllFileAbsPath(String path, boolean isDepth) {
+		return getAllFiles(path, isDepth).stream().map(File::getAbsolutePath).collect(Collectors.toList());
+	}
+	
+	/**
+	 * get all abs of file in the folder
 	 *
 	 * @param path
 	 * 		String folder path
@@ -540,7 +553,7 @@ public class FilesUtil {
 	 * example: {@code test.txt} will return {@code test}
 	 *
 	 * @param fileName
-	 * 		file name
+	 * 		file name or file name with path
 	 * @return file name without extension
 	 */
 	public static String getNameWithoutExtension(String fileName) {
@@ -624,7 +637,6 @@ public class FilesUtil {
 	 */
 	public static boolean isDirectoryEmpty(String path) {
 		if (!FilesUtil.isDirectory(path)) return false;
-		
 		List<String> list = FilesUtil.getAllFileNames(path, true);
 		return list.size() == 0;
 	}
