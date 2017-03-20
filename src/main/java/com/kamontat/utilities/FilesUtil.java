@@ -16,18 +16,6 @@ public class FilesUtil {
 	public static String DEFAULT_ENCODING = "UTF-8";
 	
 	/**
-	 * get path start from <code>current project path</code>
-	 *
-	 * @param more
-	 * 		addition string to be joined to start path
-	 * @return {@link File}
-	 * @see Paths#get(String, String...)
-	 */
-	public static File getFileFromRoot(String... more) {
-		return Paths.get(".", more).toAbsolutePath().normalize().toFile();
-	}
-	
-	/**
 	 * read all context in file {@link File}
 	 *
 	 * @param file
@@ -106,7 +94,7 @@ public class FilesUtil {
 	}
 	
 	/**
-	 * create file
+	 * create new file
 	 *
 	 * @param filePathAndName
 	 * 		String file path and name
@@ -443,9 +431,20 @@ public class FilesUtil {
 		return "";
 	}
 	
+	/**
+	 * get path start from <code>current project path</code>
+	 *
+	 * @param more
+	 * 		addition string to be joined to start path
+	 * @return {@link File}
+	 * @see Paths#get(String, String...)
+	 */
+	public static File getFileFromRoot(String... more) {
+		return Paths.get(".", more).toAbsolutePath().normalize().toFile();
+	}
 	
 	/**
-	 * get all files in a folder (is isDepth is false will include folder too)
+	 * get all files in a folder (Only file)
 	 *
 	 * @param path
 	 * 		String folder path
@@ -472,14 +471,17 @@ public class FilesUtil {
 					fileList.addAll(allFiles);
 				}
 			} else {
-				fileList.add(tempFile);
+				if (!tempFile.isDirectory()) {
+					fileList.add(tempFile);
+				}
 			}
 		}
 		return fileList;
 	}
 	
 	/**
-	 * add all files that matched with extension
+	 * add all files that matched with extension <br>
+	 * {@link #getAllFiles(String, String, boolean)}with boolean is {@code true}
 	 *
 	 * @param path
 	 * 		folder path
@@ -488,7 +490,22 @@ public class FilesUtil {
 	 * @return all file matching extension
 	 */
 	public static List<File> getAllFiles(String path, String extension) {
-		return getAllFiles(path, true).stream().filter(file -> extension.equals(getExtension(file.getName()))).collect(Collectors.toList());
+		return getAllFiles(path, extension, true);
+	}
+	
+	/**
+	 * get all file from the folder
+	 *
+	 * @param path
+	 * 		folder path
+	 * @param extension
+	 * 		filter file extension
+	 * @param isDepth
+	 * 		recursive reading sub folder
+	 * @return all file matching extension
+	 */
+	public static List<File> getAllFiles(String path, String extension, boolean isDepth) {
+		return getAllFiles(path, isDepth).stream().filter(file -> extension.equals(getExtension(file.getName()))).collect(Collectors.toList());
 	}
 	
 	/**
@@ -501,8 +518,7 @@ public class FilesUtil {
 	 * @return {@link List} of the {@link String}
 	 */
 	public static List<String> getAllFileNames(String path, boolean isDepth) {
-		List<File> fileList = getAllFiles(path, isDepth);
-		return fileList.stream().map(File::getName).collect(Collectors.toList());
+		return getAllFiles(path, isDepth).stream().map(File::getName).collect(Collectors.toList());
 	}
 	
 	/**
@@ -542,6 +558,14 @@ public class FilesUtil {
 		return new File(path).getName();
 	}
 	
+	public static boolean isFileExist(String fileNameAndPath) {
+		if (!isFileExistNotCreate(fileNameAndPath)) {
+			createFolders(fileNameAndPath.replace(File.separator + getFileName(fileNameAndPath), ""));
+			return newFile(fileNameAndPath, "");
+		}
+		return true;
+	}
+	
 	/**
 	 * check if the specified file exists
 	 *
@@ -549,7 +573,7 @@ public class FilesUtil {
 	 * 		the name of the file to be checked
 	 * @return boolean true if exits, false if not
 	 */
-	public static boolean isFileExist(String fileNameAndPath) {
+	public static boolean isFileExistNotCreate(String fileNameAndPath) {
 		return new File(fileNameAndPath).isFile();
 	}
 	
@@ -577,7 +601,7 @@ public class FilesUtil {
 	 */
 	public static boolean isDirectoryExistNotCreate(String path) {
 		File f = new File(path);
-		return (f.exists() && f.isDirectory());
+		return (f.isDirectory());
 	}
 	
 	/**
@@ -623,7 +647,6 @@ public class FilesUtil {
 		}
 		return copyFile(srcPath + File.separator + fileName, dstPath + File.separator + fileName, false);
 	}
-	
 	
 	/**
 	 * move a file
@@ -673,5 +696,23 @@ public class FilesUtil {
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * get output file, if file not exist automatic create file and if it's still not exist return {@code null}
+	 *
+	 * @param path
+	 * 		file name with absolute path
+	 * @return output stream
+	 */
+	public static FileOutputStream getOutputStream(String path) {
+		if (FilesUtil.isFileExist(path)) {
+			try {
+				return new FileOutputStream(path);
+			} catch (FileNotFoundException ignored) {
+				return null;
+			}
+		}
+		return null;
 	}
 }
