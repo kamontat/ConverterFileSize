@@ -16,14 +16,14 @@ public class FilesUtil {
 	public static String DEFAULT_ENCODING = "UTF-8";
 	
 	/**
-	 * get path start with <code>current project path</code>
+	 * get path start from <code>current project path</code>
 	 *
 	 * @param more
 	 * 		addition string to be joined to start path
 	 * @return {@link File}
 	 * @see Paths#get(String, String...)
 	 */
-	public static File getFile(String... more) {
+	public static File getFileFromRoot(String... more) {
 		return Paths.get(".", more).toAbsolutePath().normalize().toFile();
 	}
 	
@@ -196,6 +196,61 @@ public class FilesUtil {
 	}
 	
 	/**
+	 * delete all files inside folder
+	 *
+	 * @param folderPath
+	 * 		String folder Path
+	 */
+	public static void delAllFile(String folderPath) {
+		File file = new File(folderPath);
+		if (!file.exists()) {
+			return;
+		}
+		if (!file.isDirectory()) {
+			return;
+		}
+		if (file.getAbsolutePath().equalsIgnoreCase("/")) {
+			System.out.println("this is a root directory, you cannot delete all files in it!");
+			System.out.println("please change the folderPath!");
+			return;
+		}
+		if (file.getAbsolutePath().equalsIgnoreCase("/root")) {
+			System.out.println("this is a root directory, you cannot delete all files in it!");
+			System.out.println("please change the folderPath!");
+			return;
+		}
+		if (file.getAbsolutePath().equalsIgnoreCase("/usr") || file.getAbsolutePath().equalsIgnoreCase("/opt") || file.getAbsolutePath().equalsIgnoreCase("/bin") || file.getAbsolutePath().equalsIgnoreCase("/sbin") || file.getAbsolutePath().equalsIgnoreCase("/etc") || file.getAbsolutePath().equalsIgnoreCase("/selinux") || file.getAbsolutePath().equalsIgnoreCase("/sys") || file.getAbsolutePath().equalsIgnoreCase("/var") || file.getAbsolutePath().equalsIgnoreCase("/home") || file.getAbsolutePath().equalsIgnoreCase("/net")) {
+			System.out.println("this is a root directory, you cannot delete all files in it!");
+			System.out.println("please change the folderPath!");
+			return;
+		}
+		if (file.getAbsolutePath().equalsIgnoreCase("C://") || file.getAbsolutePath().equalsIgnoreCase("C:\\\\")) {
+			System.out.println("this is a root directory, you cannot delete all files in it!");
+			System.out.println("please change the folderPath!");
+			return;
+		}
+		String[] tempList = file.list();
+		File temp;
+		if (tempList == null) {
+			return;
+		}
+		for (String aTempList : tempList) {
+			if (folderPath.endsWith(File.separator)) {
+				temp = new File(folderPath + aTempList);
+			} else {
+				temp = new File(folderPath + File.separator + aTempList);
+			}
+			if (temp.isFile()) {
+				temp.delete();
+			}
+			if (temp.isDirectory()) {
+				delAllFile(folderPath + "/" + aTempList);// delete all files inside
+				delFolder(folderPath + "/" + aTempList);// delete the empty folder
+			}
+		}
+	}
+	
+	/**
 	 * create folder
 	 *
 	 * @param folderPath
@@ -233,60 +288,6 @@ public class FilesUtil {
 		}
 	}
 	
-	/**
-	 * delete all files inside folder
-	 *
-	 * @param path
-	 * 		String folder path
-	 */
-	public static void delAllFile(String path) {
-		File file = new File(path);
-		if (!file.exists()) {
-			return;
-		}
-		if (!file.isDirectory()) {
-			return;
-		}
-		if (file.getAbsolutePath().equalsIgnoreCase("/")) {
-			System.out.println("this is a root directory, you cannot delete all files in it!");
-			System.out.println("please change the path!");
-			return;
-		}
-		if (file.getAbsolutePath().equalsIgnoreCase("/root")) {
-			System.out.println("this is a root directory, you cannot delete all files in it!");
-			System.out.println("please change the path!");
-			return;
-		}
-		if (file.getAbsolutePath().equalsIgnoreCase("/usr") || file.getAbsolutePath().equalsIgnoreCase("/opt") || file.getAbsolutePath().equalsIgnoreCase("/bin") || file.getAbsolutePath().equalsIgnoreCase("/sbin") || file.getAbsolutePath().equalsIgnoreCase("/etc") || file.getAbsolutePath().equalsIgnoreCase("/selinux") || file.getAbsolutePath().equalsIgnoreCase("/sys") || file.getAbsolutePath().equalsIgnoreCase("/var") || file.getAbsolutePath().equalsIgnoreCase("/home") || file.getAbsolutePath().equalsIgnoreCase("/net")) {
-			System.out.println("this is a root directory, you cannot delete all files in it!");
-			System.out.println("please change the path!");
-			return;
-		}
-		if (file.getAbsolutePath().equalsIgnoreCase("C://") || file.getAbsolutePath().equalsIgnoreCase("C:\\\\")) {
-			System.out.println("this is a root directory, you cannot delete all files in it!");
-			System.out.println("please change the path!");
-			return;
-		}
-		String[] tempList = file.list();
-		File temp;
-		if (tempList == null) {
-			return;
-		}
-		for (String aTempList : tempList) {
-			if (path.endsWith(File.separator)) {
-				temp = new File(path + aTempList);
-			} else {
-				temp = new File(path + File.separator + aTempList);
-			}
-			if (temp.isFile()) {
-				temp.delete();
-			}
-			if (temp.isDirectory()) {
-				delAllFile(path + "/" + aTempList);// delete all files inside
-				delFolder(path + "/" + aTempList);// delete the empty folder
-			}
-		}
-	}
 	
 	/**
 	 * copy a file
@@ -442,16 +443,6 @@ public class FilesUtil {
 		return "";
 	}
 	
-	/**
-	 * check if the specified file exists
-	 *
-	 * @param fileName
-	 * 		the name of the file to be checked
-	 * @return boolean true if exits, false if not
-	 */
-	public static boolean isFileExist(String fileName) {
-		return new File(fileName).isFile();
-	}
 	
 	/**
 	 * get all files in a folder (is isDepth is false will include folder too)
@@ -515,17 +506,6 @@ public class FilesUtil {
 	}
 	
 	/**
-	 * remove suffix of a file
-	 *
-	 * @param fileName
-	 * 		file name
-	 * @return String file name without suffix
-	 */
-	public static String getNameNoSuffix(String fileName) {
-		return fileName.replace("." + getExtension(fileName), "");
-	}
-	
-	/**
 	 * get file extension/suffix (without dot) <br>
 	 * Example: html, txt, pdf, etc.
 	 *
@@ -547,7 +527,7 @@ public class FilesUtil {
 	 * 		file name
 	 * @return file name without extension
 	 */
-	public static String removeExtension(String fileName) {
+	public static String getNameWithoutExtension(String fileName) {
 		return fileName.replace("." + getExtension(fileName), "");
 	}
 	
@@ -563,14 +543,25 @@ public class FilesUtil {
 	}
 	
 	/**
+	 * check if the specified file exists
+	 *
+	 * @param fileNameAndPath
+	 * 		the name of the file to be checked
+	 * @return boolean true if exits, false if not
+	 */
+	public static boolean isFileExist(String fileNameAndPath) {
+		return new File(fileNameAndPath).isFile();
+	}
+	
+	/**
 	 * check if directory exists, if not exist, create it, return false if create failed
 	 *
 	 * @param path
 	 * 		folder path
 	 * @return boolean
 	 */
-	public static boolean isExist(String path) {
-		if (!isExistNotCreate(path)) {
+	public static boolean isDirectoryExist(String path) {
+		if (!isDirectoryExistNotCreate(path)) {
 			String newPath = FilesUtil.createFolders(FilesUtil.separatePath(path));
 			return !newPath.equals("");
 		}
@@ -584,7 +575,7 @@ public class FilesUtil {
 	 * 		folder path
 	 * @return boolean
 	 */
-	public static boolean isExistNotCreate(String path) {
+	public static boolean isDirectoryExistNotCreate(String path) {
 		File f = new File(path);
 		return (f.exists() && f.isDirectory());
 	}
@@ -598,6 +589,20 @@ public class FilesUtil {
 	 */
 	public static boolean isDirectory(String path) {
 		return new File(path).isDirectory();
+	}
+	
+	/**
+	 * check is that directory empty or not
+	 *
+	 * @param path
+	 * 		absolute folder path
+	 * @return true if the path is empty directory
+	 */
+	public static boolean isDirectoryEmpty(String path) {
+		if (!FilesUtil.isDirectory(path)) return false;
+		
+		List<String> list = FilesUtil.getAllFileNames(path, true);
+		return list.size() == 0;
 	}
 	
 	/**
@@ -619,19 +624,6 @@ public class FilesUtil {
 		return copyFile(srcPath + File.separator + fileName, dstPath + File.separator + fileName, false);
 	}
 	
-	/**
-	 * check is that directory empty or not
-	 *
-	 * @param path
-	 * 		absolute folder path
-	 * @return true if the path is empty directory
-	 */
-	public static boolean isEmptyDirectory(String path) {
-		if (!FilesUtil.isDirectory(path)) return false;
-		
-		List<String> list = FilesUtil.getAllFileNames(path, true);
-		return list.size() == 0;
-	}
 	
 	/**
 	 * move a file
