@@ -32,7 +32,7 @@ public class ZipsUtil {
 	 * 		new size (request {@link SizeUnitType#NON_SI} type)
 	 */
 	public static void setBufferSize(Size size) {
-		SIZE = size.convertTo(SizeUnit.BYTE).convertTo(SizeUnitType.NON_SI).getSize().intValue();
+		SIZE = size.convertTo(SizeUnit.B).convertTo(SizeUnitType.NON_SI).getSize().intValue();
 	}
 	
 	/**

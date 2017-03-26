@@ -46,6 +46,28 @@ public class Size {
 		return size;
 	}
 	
+	/**
+	 * get size with {@code int} value.
+	 *
+	 * @return size in {@code int} value
+	 * @throws ArithmeticException
+	 * 		if {@code size} has a nonzero fractional part, or will not fit in an {@code int}
+	 */
+	public int getSizeInt() throws ArithmeticException {
+		return size.intValueExact();
+	}
+	
+	/**
+	 * get size with {@code long} value.
+	 *
+	 * @return size in {@code long} value
+	 * @throws ArithmeticException
+	 * 		if {@code size} has a nonzero fractional part, or will not fit in a {@code long}
+	 */
+	public long getSizeLong() throws ArithmeticException {
+		return size.longValueExact();
+	}
+	
 	public SizeUnit getUnit() {
 		return unit;
 	}
@@ -89,11 +111,11 @@ public class Size {
 	 * @return string of size (example: 45233.1234 ~~ 45,233.12 ,if parameter is 2)
 	 */
 	public String getSizeAsString(int decimalNumber) {
-		String pattern = "#,##0.";
+		StringBuilder pattern = new StringBuilder("#,##0.");
 		for (int i = 0; i < decimalNumber; i++) {
-			pattern += "0";
+			pattern.append("0");
 		}
-		DecimalFormat df = new DecimalFormat(pattern);
+		DecimalFormat df = new DecimalFormat(pattern.toString());
 		df.setRoundingMode(DEFAULT_ROUNDING_MODE);
 		return df.format(size);
 	}

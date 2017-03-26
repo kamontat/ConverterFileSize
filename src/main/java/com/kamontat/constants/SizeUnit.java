@@ -24,7 +24,7 @@ public enum SizeUnit {
 	/**
 	 * <b>Byte</b> or <b>Byte</b>
 	 */
-	BYTE("Byte", "Byte", 1),
+	B("Byte", "Byte", 1),
 	/**
 	 * <b>Kilobyte</b> or <b>Kibibyte</b>
 	 */
@@ -116,7 +116,7 @@ public enum SizeUnit {
 	 * 		string that contains unit, like this {@link com.kamontat.utilities.SizeUtil#toMinimumByte(long, SizeUnitType)} method
 	 * @param type
 	 * 		the type (can be null if don't know)
-	 * @return SizeUnit if present; otherwise, will return {@link SizeUnit#BYTE}
+	 * @return SizeUnit if present; otherwise, will return {@link SizeUnit#B}
 	 */
 	public static SizeUnit valueOf(String s, SizeUnitType type) {
 		return Arrays.stream(values()).filter(sizeUnit -> {
@@ -134,11 +134,11 @@ public enum SizeUnit {
 			boolean isSi = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.getString(SizeUnitType.SI).toLowerCase(Locale.ENGLISH));
 			boolean isNonSi = s.toLowerCase(Locale.ENGLISH).contains(sizeUnit.getString(SizeUnitType.NON_SI).toLowerCase(Locale.ENGLISH));
 			return isAbbreviation || isSi || isNonSi;
-		}).findFirst().orElse(BYTE).setType(type);
+		}).findFirst().orElse(B).setType(type);
 	}
 	
 	/**
-	 * convert this unit to Byte unit ({@link #BYTE}) <br>
+	 * convert this unit to Byte unit ({@link #B}) <br>
 	 * 1 byte = 1 byte <br>
 	 * Minimum: 10^0 or 2^0
 	 *
@@ -149,7 +149,7 @@ public enum SizeUnit {
 	 * @return the size in Byte unit
 	 */
 	public BigDecimal toB(BigDecimal number, int decimalPoint) {
-		return to(number, decimalPoint, BYTE);
+		return to(number, decimalPoint, B);
 	}
 	
 	/**

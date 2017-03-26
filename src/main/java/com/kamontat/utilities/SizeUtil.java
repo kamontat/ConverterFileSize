@@ -7,9 +7,6 @@ import com.kamontat.object.Size;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static com.kamontat.object.Size.DEFAULT_ROUNDING_MODE;
-import static com.kamontat.object.Size.SIZE_SCALE;
-
 /**
  * easy convert file size to other.
  *
@@ -33,7 +30,7 @@ public class SizeUtil {
 	 */
 	public static String toMinimumByte(long bytes, SizeUnitType type) {
 		if (bytes < 0) throw new IllegalArgumentException("input bytes must be positive number.");
-		if (bytes < type.getSize()) return bytes + " BYTE";
+		if (bytes < type.getSize()) return bytes + " B";
 		int exp = (int) (Math.log(bytes) / Math.log(type.getSize()));
 		String pre = (type == SizeUnitType.SI ? "kMGTPE": "KMGTPE").charAt(exp - 1) + (type == SizeUnitType.SI ? "": "i");
 		return String.format("%.1f %sB", bytes / Math.pow(type.getSize(), exp), pre);
@@ -60,6 +57,23 @@ public class SizeUtil {
 		Objects.requireNonNull(unit);
 		Objects.requireNonNull(type);
 		
-		return new Size(BigDecimal.valueOf(size).setScale(SIZE_SCALE, DEFAULT_ROUNDING_MODE), unit, type);
+		return new Size(BigDecimal.valueOf(size), unit, type);
+	}
+	
+	/**
+	 * get size with default type({@link SizeUnitType#NON_SI}) <br>
+	 * call {@link #getSize(long, SizeUnit, SizeUnitType)} method
+	 *
+	 * @param size
+	 * 		file size
+	 * @param unit
+	 * 		the size unit
+	 * @return {@link Size}
+	 */
+	public static Size getSize(long size, SizeUnit unit) {
+		Objects.requireNonNull(size);
+		Objects.requireNonNull(unit);
+		
+		return new Size(BigDecimal.valueOf(size), unit, SizeUnitType.NON_SI);
 	}
 }

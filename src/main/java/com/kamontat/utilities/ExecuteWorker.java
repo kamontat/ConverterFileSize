@@ -1,5 +1,6 @@
 package com.kamontat.utilities;
 
+import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -18,7 +19,7 @@ import java.util.function.Function;
  * <b>Example: </b> <br>
  * <pre>{@code
  *     // create new thread
- *     MultiThread thread = new MultiThread(Executors.newScheduledThreadPool(1));
+ *     ExecuteWorker thread = new ExecuteWorker(Executors.newScheduledThreadPool(1));
  *     // print "Hello world!" in every 1 second for 1 minutes
  *     thread.schedule(() -> System.out.println("Hello world!"), 0, 1, 60, TimeUnit.SECONDS);
  *     // close the thread
@@ -32,7 +33,7 @@ import java.util.function.Function;
  * @see Future
  * @since Wed 15/Mar/2017 - 10:08 PM
  */
-public class MultiThread {
+public class ExecuteWorker {
 	private ExecutorService service;
 	
 	/**
@@ -42,7 +43,7 @@ public class MultiThread {
 	 * @param service
 	 * 		the running service
 	 */
-	public MultiThread(ExecutorService service) {
+	public ExecuteWorker(ExecutorService service) {
 		this.service = service;
 	}
 	
@@ -264,6 +265,39 @@ public class MultiThread {
 	}
 	
 	/**
+	 * do <code>run</code> on background using {@link SwingWorker}
+	 *
+	 * @param run
+	 * 		runner code
+	 */
+	public static void doBackground(Runnable run) {
+		ExecuteWorker.doBackground(run, null);
+	}
+	
+	/**
+	 * do <code>run</code> on background using {@link SwingWorker}
+	 *
+	 * @param run
+	 * 		runner code
+	 * @param done
+	 * 		when run complete, it's will run this parameter
+	 */
+	public static void doBackground(Runnable run, Runnable done) {
+		new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				run.run();
+				return null;
+			}
+			
+			@Override
+			protected void done() {
+				if (done != null) done.run();
+			}
+		}.execute();
+	}
+	
+	/**
 	 * convert callable to runnable with <b>ignore</b> all exception and return value.
 	 *
 	 * @param callable
@@ -349,7 +383,7 @@ public class MultiThread {
 		/**
 		 * this get will return 2 thing
 		 * <ol>
-		 * <li>{@link CancellationException} - if the task got cancel ({@link MultiThread#schedule(Runnable, int, int, int, TimeUnit, boolean)})</li>
+		 * <li>{@link CancellationException} - if the task got cancel ({@link ExecuteWorker#schedule(Runnable, int, int, int, TimeUnit, boolean)})</li>
 		 * <li>{@code Null} - if have another exception or {@link ScheduledFuture#get()} return object successfully</li>
 		 * </ol>
 		 *

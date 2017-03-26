@@ -1,6 +1,6 @@
 package com.kamontat.example;
 
-import com.kamontat.utilities.MultiThread;
+import com.kamontat.utilities.ExecuteWorker;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -13,9 +13,9 @@ import java.util.concurrent.Future;
  */
 public class WaitingAll {
 	public static void main(String[] args) {
-		MultiThread multiThread = new MultiThread(Executors.newCachedThreadPool());
+		ExecuteWorker worker = new ExecuteWorker(Executors.newCachedThreadPool());
 		// example 1 task to execute
-		List<Future<Long>> list = multiThread.executeAndWaitAll(() -> {
+		List<Future<Long>> list = worker.executeAndWaitAll(() -> {
 			long a = 0;
 			for (int i = 0; i < Integer.MAX_VALUE; i++) {
 				a += i;
@@ -27,6 +27,6 @@ public class WaitingAll {
 		if (list == null) throw new NullPointerException("null list");
 		
 		// must shutdown
-		multiThread.shutdown();
+		worker.shutdown();
 	}
 }

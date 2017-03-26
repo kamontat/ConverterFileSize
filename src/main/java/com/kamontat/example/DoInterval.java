@@ -1,6 +1,6 @@
 package com.kamontat.example;
 
-import com.kamontat.utilities.MultiThread;
+import com.kamontat.utilities.ExecuteWorker;
 
 import java.util.concurrent.*;
 
@@ -12,9 +12,9 @@ import java.util.concurrent.*;
 public class DoInterval {
 	public static void main(String[] args) {
 		// create schedule pool
-		MultiThread multiThread = new MultiThread(Executors.newScheduledThreadPool(1));
+		ExecuteWorker executor = new ExecuteWorker(Executors.newScheduledThreadPool(1));
 		// print `Hello world!` every 1 second for 10 second
-		MultiThread.ScheduleFutureImp future = multiThread.schedule(() -> System.out.println("Hello world!"), 1, 1, 10, TimeUnit.SECONDS, true);
+		ExecuteWorker.ScheduleFutureImp future = executor.schedule(() -> System.out.println("Hello world!"), 1, 1, 10, TimeUnit.SECONDS, true);
 		
 		// after this method will call automatically when schedule was done
 		if (future.waitAndDone()) {
@@ -23,7 +23,7 @@ public class DoInterval {
 			System.err.println("Some exception");
 		}
 		// must shut down
-		multiThread.shutdown();
+		executor.shutdown();
 		
 		/*
 		The result will be:
@@ -42,14 +42,14 @@ public class DoInterval {
 		
 		
 		// error example
-		MultiThread thread = new MultiThread(Executors.newCachedThreadPool());
-		MultiThread.ScheduleFutureImp newFuture = thread.schedule(() -> System.out.println("Hello world!"), 1, 1, 10, TimeUnit.SECONDS, true);
+		ExecuteWorker thread = new ExecuteWorker(Executors.newCachedThreadPool());
+		ExecuteWorker.ScheduleFutureImp newFuture = thread.schedule(() -> System.out.println("Hello world!"), 1, 1, 10, TimeUnit.SECONDS, true);
 		
 		/*
 		The result will be:
 		
-		Exception in thread "main" com.kamontat.utilities.MultiThread$ScheduleException: The service must be ScheduledExecutorService
-			at com.kamontat.utilities.MultiThread.schedule(MultiThread.java:78)
+		Exception in thread "main" com.kamontat.utilities.ExecuteWorker$ScheduleException: The service must be ScheduledExecutorService
+			at com.kamontat.utilities.ExecuteWorker.schedule(ExecuteWorker.java:78)
 			at com.kamontat.example.DoInterval.main(DoInterval.java:46)
 			. . .
 		 */
